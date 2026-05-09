@@ -23,10 +23,10 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
 
-  profileImage: {
-    type: String,
-    default: '',
-  },
+  // profileImage: {
+  //   type: String,
+  //   default: '',
+  // },
 
   resetOtp: {
     type: String,

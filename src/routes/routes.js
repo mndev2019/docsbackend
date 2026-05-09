@@ -28,11 +28,13 @@ const {
 
 
 // SIGNUP WITH IMAGE
-router.post(
-  '/signup',
-  upload.single('profileImage'),
-  signup
-);
+// router.post(
+//   '/signup',
+//   upload.single('profileImage'),
+//   signup
+// );
+
+router.post('/signup', signup);
 
 router.post('/login', login);
 

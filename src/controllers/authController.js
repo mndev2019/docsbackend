@@ -61,9 +61,9 @@ exports.signup = async (req, res) => {
       await bcrypt.hash(password, 10);
 
     // CLOUDINARY IMAGE URL
-    const profileImage = req.file
-      ? req.file.path
-      : '';
+    // const profileImage = req.file
+    //   ? req.file.path
+    //   : '';
 
     const user = await User.create({
 
@@ -75,7 +75,7 @@ exports.signup = async (req, res) => {
 
       password: hashedPassword,
 
-      profileImage,
+      // profileImage,
 
     });
 
