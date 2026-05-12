@@ -5,6 +5,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
 const generateToken = require('../utils/generateToken');
+const cloudinary = require('cloudinary').v2;
 
 
 // SIGNUP
@@ -264,96 +265,7 @@ exports.forgotPassword = async (
 };
 
 // VERIFY OTP
-// exports.verifyOtp = async (
-//   req,
-//   res
-// ) => {
 
-//   try {
-
-//     const {
-//       email,
-//       otp,
-//     } = req.body;
-
-//     const user =
-//       await User.findOne({
-//         email,
-//       });
-
-//     if (!user) {
-
-//       return res.status(400).json({
-
-//         success: false,
-
-//         message:
-//           'User Not Found',
-
-//       });
-
-//     }
-
-//     // CHECK OTP
-//     if (
-
-//       String(user.resetOtp)
-//       !==
-//       String(otp)
-
-//     ) {
-
-//       return res.status(400).json({
-
-//         success: false,
-
-//         message:
-//           'Invalid OTP',
-
-//       });
-
-//     }
-
-//     // OTP EXPIRE
-//     if (
-//       user.resetOtpExpire
-//       < Date.now()
-//     ) {
-
-//       return res.status(400).json({
-
-//         success: false,
-
-//         message:
-//           'OTP Expired',
-
-//       });
-
-//     }
-
-//     res.status(200).json({
-
-//       success: true,
-
-//       message:
-//         'OTP Verified',
-
-//     });
-
-//   } catch (error) {
-
-//     res.status(500).json({
-
-//       success: false,
-
-//       message:
-//         error.message,
-
-//     });
-
-//   }
-
-// };
 exports.verifyOtp = async (req, res) => {
 
   try {
@@ -474,4 +386,143 @@ exports.resetPassword = async (req, res) => {
     });
 
   }
+};
+
+
+
+
+// EDIT PROFILE
+exports.editProfile = async (req, res) => {
+
+  try {
+
+    const userId = req.user.id;
+
+    const {
+      name,
+      email,
+      mobile,
+      dob,
+      gender,
+      bio,
+    } = req.body;
+
+    // OLD USER
+    const existingUser = await User.findById(userId);
+
+    const updatedData = {
+      name,
+      email,
+      mobile,
+      dob,
+      gender,
+      bio,
+    };
+
+    // IF NEW IMAGE
+    if (req.file) {
+
+      // DELETE OLD IMAGE
+      if (existingUser?.profileImage) {
+
+        try {
+
+          const imageUrl = existingUser.profileImage;
+
+          // FILE NAME
+          const fileName = imageUrl
+            .split('/')
+            .pop()
+            .split('.')[0];
+
+          // PUBLIC ID
+          const publicId = `BocsBackend/${fileName}`;
+
+          // DELETE FROM CLOUDINARY
+          await cloudinary.uploader.destroy(publicId);
+
+          console.log('OLD IMAGE DELETED');
+
+        } catch (deleteError) {
+
+          console.log(
+            'DELETE ERROR:',
+            deleteError.message
+          );
+
+        }
+      }
+
+      // SAVE NEW IMAGE URL
+      updatedData.profileImage = req.file.path;
+    }
+
+    // UPDATE USER
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      updatedData,
+      {
+        new: true,
+      }
+    ).select('-password');
+
+    res.status(200).json({
+
+      success: true,
+      message: 'Profile Updated Successfully',
+      user: updatedUser,
+
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+
+      success: false,
+      message: error.message,
+
+    });
+
+  }
+
+};
+
+// GET PROFILE
+exports.getProfile = async (req, res) => {
+
+  try {
+     
+
+    const userId = req.user.id;
+
+    const user = await User.findById(userId).select('-password');
+
+    if (!user) {
+
+      return res.status(404).json({
+        success: false,
+        message: 'User Not Found',
+      });
+
+    }
+
+    res.status(200).json({
+
+      success: true,
+      user,
+
+    });
+
+  } catch (error) {
+        
+
+    res.status(500).json({
+
+      success: false,
+      message: error.message,
+
+    });
+
+  }
+
 };

@@ -9,7 +9,8 @@ const upload = require(
 const {
 
   signup,
-
+  getProfile,
+  editProfile,
   login,
 
   forgotPassword,
@@ -25,6 +26,11 @@ const {
 } = require(
   '../controllers/documentController.js'
 );
+const {
+    reportProblem,
+    getAllReports
+} = require('../controllers/reportController');
+const auth = require('../middleware/auth.js');
 
 
 // SIGNUP WITH IMAGE
@@ -35,6 +41,8 @@ const {
 // );
 
 router.post('/signup', signup);
+router.get('/profile', auth, getProfile);
+router.put('/edit-profile',auth, upload.single('profileImage'), editProfile);
 
 router.post('/login', login);
 
@@ -71,6 +79,19 @@ router.get(
 router.delete(
   '/documents/:id',
   deleteDocument
+);
+
+//report problem
+router.post(
+    '/report-problem',
+    auth,
+    upload.single('screenshot'),
+    reportProblem
+);
+
+router.get(
+    '/all-reports',
+    getAllReports
 );
 
 module.exports = router;
