@@ -5,6 +5,8 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
 const generateToken = require('../utils/generateToken');
+const Notification =
+require('../models/Notification');
 const cloudinary = require('cloudinary').v2;
 
 
@@ -458,21 +460,39 @@ exports.editProfile = async (req, res) => {
     }
 
     // UPDATE USER
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      updatedData,
-      {
-        new: true,
-      }
-    ).select('-password');
+   // UPDATE USER
+const updatedUser = await User.findByIdAndUpdate(
+  userId,
+  updatedData,
+  {
+    new: true,
+  }
+).select('-password');
 
-    res.status(200).json({
 
-      success: true,
-      message: 'Profile Updated Successfully',
-      user: updatedUser,
+// ================= CREATE NOTIFICATION =================
+await Notification.create({
 
-    });
+  userId: updatedUser._id,
+
+  title: 'Profile Updated',
+
+  message:
+    'Your profile has been updated successfully.',
+
+  type: 'profile',
+
+});
+
+
+// RESPONSE
+res.status(200).json({
+
+  success: true,
+  message: 'Profile Updated Successfully',
+  user: updatedUser,
+
+});
 
   } catch (error) {
 

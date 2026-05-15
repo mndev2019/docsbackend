@@ -30,6 +30,9 @@ const {
     reportProblem,
     getAllReports
 } = require('../controllers/reportController');
+const {
+   getNotifications,
+} = require('../controllers/notificationController');
 const auth = require('../middleware/auth.js');
 
 
@@ -92,6 +95,13 @@ router.post(
 router.get(
     '/all-reports',
     getAllReports
+);
+
+//notification
+// GET
+router.get(
+  '/notifications/:userId',
+  getNotifications
 );
 
 module.exports = router;

@@ -50,12 +50,19 @@ const documentSchema =
       required: true,
 
     },
+    publicId: {
+
+      type: String,
+
+      required: true,
+
+    },
 
   },
-  {
-    timestamps: true,
-  }
-);
+    {
+      timestamps: true,
+    }
+  );
 
 module.exports = mongoose.model(
   'Document',
