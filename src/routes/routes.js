@@ -17,21 +17,22 @@ const {
 
   resetPassword,
   verifyOtp,
-
+  getAllUsers,
 } = require('../controllers/authController');
 const {
   uploadDocument,
   getDocuments,
   deleteDocument,
+  getUserDocuments,
 } = require(
   '../controllers/documentController.js'
 );
 const {
-    reportProblem,
-    getAllReports
+  reportProblem,
+  getAllReports
 } = require('../controllers/reportController');
 const {
-   getNotifications,
+  getNotifications,
 } = require('../controllers/notificationController');
 const auth = require('../middleware/auth.js');
 
@@ -45,7 +46,8 @@ const auth = require('../middleware/auth.js');
 
 router.post('/signup', signup);
 router.get('/profile', auth, getProfile);
-router.put('/edit-profile',auth, upload.single('profileImage'), editProfile);
+router.put('/edit-profile', auth, upload.single('profileImage'), editProfile);
+router.get("/admin/all-users", getAllUsers);
 
 router.post('/login', login);
 
@@ -79,6 +81,11 @@ router.get(
   getDocuments
 );
 
+router.get(
+  "/admin/user-documents/:userId",
+  getUserDocuments
+);
+
 router.delete(
   '/documents/:id',
   deleteDocument
@@ -86,15 +93,15 @@ router.delete(
 
 //report problem
 router.post(
-    '/report-problem',
-    auth,
-    upload.single('screenshot'),
-    reportProblem
+  '/report-problem',
+  auth,
+  upload.single('screenshot'),
+  reportProblem
 );
 
 router.get(
-    '/all-reports',
-    getAllReports
+  '/all-reports',
+  getAllReports
 );
 
 //notification
